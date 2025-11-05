@@ -1,24 +1,36 @@
-const QRCode = require("qrcode");
-const fs = require("fs");
+// ✅ QR Code Generator for Café Tables
+// Author: Harshil Cafe System
 
-// 👇 Replace this with your real domain (jab deploy karoge)
-const BASE_URL = "http://localhost:3000/order.html?table=";
+const QRCode = require("qrcode"); // ensure installed via: npm install qrcode
 
-// Number of tables in your café
-const totalTables = 10; // <- yahan total tables ka number likho
+// 🪑 Total tables in your café
+const totalTables = 20;
 
-for (let i = 1; i <= totalTables; i++) {
-  const tableUrl = `${BASE_URL}${i}`;
-  const fileName = `table_${i}.png`;
+// 🌐 Your live website URL (no trailing slash)
+const baseURL = "https://cafe-oreder-system.onrender.com";
 
-  QRCode.toFile(fileName, tableUrl, {
-    color: {
-      dark: "#000000",
-      light: "#ffffff"
-    },
-    width: 300
-  }, (err) => {
-    if (err) throw err;
-    console.log(`✅ QR generated for Table ${i}: ${fileName}`);
-  });
-}
+console.log("🚀 Generating QR codes...");
+
+(async () => {
+  for (let table = 1; table <= totalTables; table++) {
+    const url = `${baseURL}/order.html?table=${table}`;
+    const fileName = `qr_table_${table}.png`;
+
+    try {
+      await QRCode.toFile(fileName, url, {
+        color: {
+          dark: "#000000",  // QR color
+          light: "#ffffff", // background color
+        },
+        width: 400,
+        margin: 3,
+      });
+      console.log(`✅ QR code generated for Table ${table} (${url})`);
+    } catch (err) {
+      console.error(`❌ Error generating QR for Table ${table}:`, err);
+    }
+  }
+
+  console.log("\n🎉 All QR codes created successfully!");
+  console.log("📁 Check your project folder for 'qr_table_1.png', 'qr_table_2.png', etc.");
+})();
