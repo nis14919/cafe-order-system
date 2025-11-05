@@ -1,52 +1,62 @@
+// ✅ Café Order System Backend - by Harshil
 const express = require("express");
-const fs = require("fs");
-const cors = require("cors");
+const path = require("path");
 const app = express();
-const PORT = 3000;
 
-app.use(cors());
+// Middleware
 app.use(express.json());
-app.use(express.static(".")); // serve frontend files (HTML)
+app.use(express.static(__dirname)); // serve HTML, CSS, JS files
 
-const FILE = "./orders.json";
+// Dummy order data (memory based)
+let orders = [];
+let nextId = 1;
 
-// Read existing orders
-function readOrders() {
-  if (!fs.existsSync(FILE)) return [];
-  return JSON.parse(fs.readFileSync(FILE, "utf-8") || "[]");
-}
-
-// Save updated orders
-function saveOrders(data) {
-  fs.writeFileSync(FILE, JSON.stringify(data, null, 2));
-}
-
-// Add new order
+// 🧾 Place new order
 app.post("/api/order", (req, res) => {
-  const order = req.body;
-  const orders = readOrders();
-  order.id = Date.now();
-  order.status = "new";
-  orders.push(order);
-  saveOrders(orders);
-  res.json({ success: true, message: "Order placed!" });
+  const newOrder = {
+    id: nextId++,
+    table: req.body.table,
+    items: req.body.items,
+    status: "new",
+    time: new Date().toLocaleTimeString(),
+  };
+  orders.push(newOrder);
+  console.log("🆕 New Order:", newOrder);
+  res.json({ message: "Order placed successfully!" });
 });
 
-// Get all orders
+// 📋 Get all orders (for admin)
 app.get("/api/orders", (req, res) => {
-  const orders = readOrders();
-  res.json(orders.reverse());
+  res.json(orders);
 });
 
-// Update order status
+// 🔁 Update order status
 app.put("/api/order/:id", (req, res) => {
-  const orders = readOrders();
-  const order = orders.find((o) => o.id == req.params.id);
-  if (!order) return res.status(404).json({ error: "Order not found" });
+  const id = parseInt(req.params.id);
+  const order = orders.find((o) => o.id === id);
+  if (!order) {
+    return res.status(404).json({ message: "Order not found" });
+  }
   order.status = req.body.status || order.status;
-  saveOrders(orders);
-  res.json({ success: true, message: "Status updated" });
+  console.log("🔄 Updated Order:", order);
+  res.json({ message: "Status updated" });
 });
 
-// Start the server
-app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+// 🧹 Optional: clear all orders (for testing)
+app.delete("/api/orders", (req, res) => {
+  orders = [];
+  nextId = 1;
+  console.log("🗑️ All orders cleared");
+  res.json({ message: "All orders deleted" });
+});
+
+// 🏠 Default route (homepage)
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "order.html"));
+});
+
+// ✅ Server listen
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`🚀 Server running on port ${port}`);
+});
