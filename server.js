@@ -1,58 +1,78 @@
-// ✅ Harshil Café - Final Backend (File Save + API + Static Frontend)
-const express = require("express");
-const path = require("path");
-const fs = require("fs");
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 
+// Middleware to parse JSON bodies
 app.use(express.json());
-app.use(express.static(__dirname));
 
-const ordersFile = path.join(__dirname, "orders.json");
+// File path for orders data
+const ordersFilePath = path.join(__dirname, 'orders.json');
 
-let orders = [];
-if (fs.existsSync(ordersFile)) {
+// Helper function to read orders from orders.json
+function getOrders() {
+  return new Promise((resolve, reject) => {
+    fs.readFile(ordersFilePath, 'utf8', (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(JSON.parse(data));
+      }
+    });
+  });
+}
+
+// API to get all orders
+app.get('/orders.json', async (req, res) => {
   try {
-    orders = JSON.parse(fs.readFileSync(ordersFile, "utf8"));
-    console.log(`📂 Loaded ${orders.length} existing orders`);
+    const orders = await getOrders();
+    res.json(orders);
   } catch (err) {
-    console.error("❌ Error reading orders.json:", err);
+    res.status(500).send('Error reading orders data');
   }
-}
-
-let nextId = orders.length > 0 ? Math.max(...orders.map(o => o.id)) + 1 : 1;
-
-function saveOrders() {
-  fs.writeFileSync(ordersFile, JSON.stringify(orders, null, 2));
-}
-
-app.post("/api/order", (req, res) => {
-  const newOrder = {
-    id: nextId++,
-    table: req.body.table,
-    items: req.body.items,
-    status: "new",
-    time: new Date().toLocaleTimeString(),
-  };
-  orders.push(newOrder);
-  saveOrders();
-  console.log("🆕 New Order:", newOrder);
-  res.json({ message: "Order placed successfully!" });
 });
 
-app.get("/api/orders", (req, res) => res.json(orders));
+// API to update the status of an order
+app.put('/api/order/:id', async (req, res) => {
+  const orderId = parseInt(req.params.id, 10);
+  try {
+    const orders = await getOrders();
+    const orderIndex = orders.findIndex(order => order.id === orderId);
 
-app.put("/api/order/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const order = orders.find(o => o.id === id);
-  if (!order) return res.status(404).json({ message: "Order not found" });
-  order.status = req.body.status || order.status;
-  saveOrders();
-  console.log("🔄 Updated Order:", order);
-  res.json({ message: "Status updated" });
+    if (orderIndex === -1) {
+      return res.status(404).send('Order not found');
+    }
+
+    // Update the order status to 'completed'
+    orders[orderIndex].status = 'completed';
+    fs.writeFile(ordersFilePath, JSON.stringify(orders, null, 2), err => {
+      if (err) {
+        res.status(500).send('Error saving orders');
+      } else {
+        res.status(200).send('Order status updated');
+      }
+    });
+  } catch (err) {
+    res.status(500).send('Error updating order status');
+  }
 });
 
-app.get("/", (req, res) => res.sendFile(path.join(__dirname, "order.html")));
-app.get("/admin", (req, res) => res.sendFile(path.join(__dirname, "admin.html")));
+// API to clear all orders (optional)
+app.delete('/clear-orders', async (req, res) => {
+  try {
+    fs.writeFile(ordersFilePath, JSON.stringify([], null, 2), err => {
+      if (err) {
+        res.status(500).send('Error clearing orders');
+      } else {
+        res.status(200).send('All orders cleared');
+      }
+    });
+  } catch (err) {
+    res.status(500).send('Error clearing orders');
+  }
+});
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`🚀 Server running on port ${port}`));
+// Start server
+app.listen(3000, () => {
+  console.log('Server is running on http://localhost:3000');
+});

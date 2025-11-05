@@ -158,7 +158,7 @@
 
     async function deleteOrder(index) {
       if (!confirm("Mark this order as completed?")) return;
-      await fetch(`/delete-order/${index}`, { method: "DELETE" });
+      await fetch(`/api/order/${index}`, { method: "PUT" });
       loadOrders();
     }
 

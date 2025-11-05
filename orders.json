@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "id": 1,
+    "table": 5,
+    "items": [
+      { "name": "Cold Coffee", "qty": 2, "price": 120 },
+      { "name": "Veg Burger", "qty": 1, "price": 150 }
+    ],
+    "time": "2025-11-05T12:30:00",
+    "status": "new"
+  },
+  {
+    "id": 2,
+    "table": 8,
+    "items": [
+      { "name": "Cheese Pizza", "qty": 1, "price": 200 },
+      { "name": "Strawberry Shake", "qty": 2, "price": 160 }
+    ],
+    "time": "2025-11-05T12:45:00",
+    "status": "completed"
+  }
+]
