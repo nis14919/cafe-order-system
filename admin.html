@@ -1,128 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin Dashboard - Harshil's Café</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Café Admin Panel</title>
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      background: #f5f1ee;
-      padding: 20px;
-      color: #2f2f2f;
-      max-width: 800px;
-      margin: auto;
-    }
-
-    h1 {
+      background: #f7f3ef;
+      color: #3e2f24;
+      margin: 0;
       text-align: center;
-      color: #5a3e36;
     }
-
+    header {
+      background: #4b2e1e;
+      color: #fff;
+      padding: 20px 0;
+      font-size: 24px;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .orders {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+    }
     .order {
       background: #fff;
-      padding: 20px;
-      margin: 15px 0;
       border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin: 15px;
+      padding: 15px;
+      width: 250px;
+      text-align: left;
     }
-
     .order h3 {
-      margin: 0 0 10px;
-      color: #3e2723;
+      margin-top: 0;
     }
-
-    ul {
-      margin: 5px 0 10px 15px;
-      padding: 0;
-    }
-
-    li {
-      font-size: 14px;
-    }
-
-    .status {
-      font-weight: bold;
-      margin-top: 5px;
-    }
-
+    .status-new { color: #e67e22; font-weight: bold; }
+    .status-completed { color: #27ae60; font-weight: bold; }
     button {
-      border: none;
-      border-radius: 6px;
-      padding: 6px 12px;
-      margin-right: 6px;
+      background: #4b2e1e;
       color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 6px 12px;
+      margin-top: 10px;
       cursor: pointer;
     }
-
-    .progress {
-      background: #17a2b8;
-    }
-
-    .served {
-      background: #28a745;
-    }
-
-    .refresh {
-      background: #8b5e3c;
-      color: white;
-      margin-bottom: 15px;
-      float: right;
-      padding: 8px 14px;
-    }
-
-    .refresh:hover {
-      background: #70482b;
+    button:hover {
+      background: #6a3f27;
     }
   </style>
 </head>
 <body>
-  <h1>☕ Café Orders Dashboard</h1>
-  <button class="refresh" onclick="loadOrders()">🔄 Refresh</button>
+  <header>📋 Harshil Café - Admin Panel</header>
 
-  <div id="orders"></div>
+  <div class="orders" id="orders"></div>
 
   <script>
     async function loadOrders() {
       const res = await fetch("/api/orders");
       const data = await res.json();
-
       const container = document.getElementById("orders");
       container.innerHTML = "";
-
-      if (data.length === 0) {
-        container.innerHTML = "<p>No orders yet.</p>";
-        return;
-      }
-
-      data.forEach((o) => {
+      data.forEach(order => {
         const div = document.createElement("div");
         div.className = "order";
         div.innerHTML = `
-          <h3>Table ${o.table}</h3>
-          <ul>
-            ${o.items.map((i) => `<li>${i.name} × ${i.qty}</li>`).join("")}
-          </ul>
-          <p class="status">Status: ${o.status}</p>
-          <button class="progress" onclick="updateStatus(${o.id}, 'in_progress')">In Progress</button>
-          <button class="served" onclick="updateStatus(${o.id}, 'served')">Served</button>
+          <h3>Table ${order.table}</h3>
+          <p><strong>Items:</strong> ${order.items.map(i => i.name).join(", ")}</p>
+          <p><strong>Time:</strong> ${order.time}</p>
+          <p><strong>Status:</strong> <span class="status-${order.status}">${order.status}</span></p>
+          ${order.status === "new" ? `<button onclick="updateStatus(${order.id})">Mark Completed</button>` : ""}
         `;
         container.appendChild(div);
       });
     }
 
-    async function updateStatus(id, status) {
+    async function updateStatus(id) {
       await fetch(`/api/order/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status: "completed" })
       });
       loadOrders();
     }
 
-    // Auto-refresh every 5 seconds
-    setInterval(loadOrders, 5000);
-
     loadOrders();
+    setInterval(loadOrders, 5000);
   </script>
 </body>
 </html>

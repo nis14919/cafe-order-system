@@ -1,188 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Harshil's Café Menu</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harshil Café Menu</title>
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      background: #f5f1ee;
-      color: #2f2f2f;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-    }
-
-    header {
+      background: #f7f3ef;
+      color: #3e2f24;
+      margin: 0;
       text-align: center;
-      margin-bottom: 30px;
     }
-
-    h1 {
-      color: #5a3e36;
-      margin-bottom: 5px;
-    }
-
-    .table-info {
-      font-size: 14px;
-      color: #666;
-    }
-
-    .menu-item {
-      background: #fff;
-      padding: 15px 20px;
-      margin: 10px 0;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .menu-item span {
-      font-weight: 500;
-    }
-
-    .menu-item button {
-      background: #8b5e3c;
+    header {
+      background: #4b2e1e;
       color: #fff;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
+      padding: 20px 0;
+      font-size: 24px;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-
-    .menu-item button:hover {
-      background: #6f4529;
-    }
-
-    .cart {
-      background: #fff;
-      padding: 20px;
-      margin-top: 25px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    .cart h3 {
-      margin-bottom: 10px;
-      color: #5a3e36;
-    }
-
-    .cart-item {
+    .menu {
       display: flex;
-      justify-content: space-between;
-      margin: 5px 0;
-      font-size: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
     }
-
-    #place {
-      width: 100%;
-      margin-top: 10px;
-      padding: 10px;
-      background: #3c8b63;
+    .item {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin: 15px;
+      padding: 20px;
+      width: 200px;
+      transition: 0.3s;
+    }
+    .item:hover { transform: translateY(-5px); }
+    .item h3 { margin-bottom: 5px; }
+    .item p { margin: 0; color: #5a4635; }
+    .item button {
+      background: #4b2e1e;
       color: white;
       border: none;
-      border-radius: 6px;
-      font-size: 16px;
+      border-radius: 5px;
+      padding: 8px 14px;
+      margin-top: 10px;
       cursor: pointer;
+      transition: 0.2s;
     }
-
-    #place:hover {
-      background: #2e6849;
+    .item button:hover { background: #6a3f27; }
+    #cart {
+      background: #fff8f0;
+      display: inline-block;
+      padding: 20px;
+      margin: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-
-    #msg {
-      text-align: center;
-      margin-top: 15px;
-      font-weight: bold;
-      color: #228b22;
+    #placeOrder {
+      background: #4b2e1e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
     }
+    #placeOrder:hover { background: #6a3f27; }
   </style>
 </head>
 <body>
+  <header>☕ Harshil Café</header>
+  <div class="menu" id="menu"></div>
 
-  <header>
-    <h1>Harshil's Café</h1>
-    <p class="table-info" id="table"></p>
-  </header>
-
-  <section id="menu"></section>
-
-  <div class="cart">
-    <h3>Your Cart</h3>
-    <div id="cart">No items added.</div>
-    <button id="place">Place Order</button>
+  <div id="cart">
+    <h3>Your Order</h3>
+    <ul id="cartList"></ul>
+    <button id="placeOrder">Place Order</button>
   </div>
 
-  <p id="msg"></p>
-
   <script>
-    // Get table number from QR code link
-    const tableNo = new URLSearchParams(window.location.search).get("table") || "Unknown";
-    document.getElementById("table").innerText = "Table No: " + tableNo;
-
-    // --- Your café's real menu here ---
     const menu = [
-      { name: "Regular Coffee", price: 80 },
-      { name: "Cappuccino", price: 110 },
+      { name: "Cold Coffee", price: 120 },
+      { name: "Hot Coffee", price: 100 },
       { name: "Chocolate Shake", price: 150 },
       { name: "Veg Burger", price: 140 },
       { name: "Garlic Bread", price: 90 },
-      { name: "Cold Coffee", price: 120 },
-      { name: "Brownie", price: 100 }
+      { name: "Brownie", price: 80 },
+      { name: "Pasta Alfredo", price: 180 },
+      { name: "French Fries", price: 110 }
     ];
 
-    // --- Display Menu ---
-    const menuEl = document.getElementById("menu");
-    menu.forEach((item, i) => {
+    const menuDiv = document.getElementById("menu");
+    const cartList = document.getElementById("cartList");
+    const cart = [];
+    const table = new URLSearchParams(window.location.search).get("table") || "Unknown";
+
+    menu.forEach(item => {
       const div = document.createElement("div");
-      div.className = "menu-item";
-      div.innerHTML = `<span>${item.name} - ₹${item.price}</span>
-                       <button onclick="addToCart(${i})">Add</button>`;
-      menuEl.appendChild(div);
+      div.className = "item";
+      div.innerHTML = `<h3>${item.name}</h3><p>₹${item.price}</p><button>Add</button>`;
+      div.querySelector("button").onclick = () => {
+        cart.push(item);
+        renderCart();
+      };
+      menuDiv.appendChild(div);
     });
 
-    // --- Cart functionality ---
-    const cart = [];
-
     function renderCart() {
-      const c = document.getElementById("cart");
-      if (cart.length === 0) {
-        c.innerText = "No items added.";
-        return;
-      }
-      let total = 0;
-      c.innerHTML = "";
-      cart.forEach((it) => {
-        total += it.price * it.qty;
-        c.innerHTML += `<div class="cart-item">
-                          <span>${it.name} x ${it.qty}</span>
-                          <span>₹${it.price * it.qty}</span>
-                        </div>`;
+      cartList.innerHTML = "";
+      cart.forEach(i => {
+        const li = document.createElement("li");
+        li.textContent = `${i.name} - ₹${i.price}`;
+        cartList.appendChild(li);
       });
-      c.innerHTML += `<hr><div class="cart-item"><strong>Total</strong><strong>₹${total}</strong></div>`;
     }
 
-    function addToCart(i) {
-      const item = menu[i];
-      const existing = cart.find((x) => x.name === item.name);
-      if (existing) existing.qty++;
-      else cart.push({ ...item, qty: 1 });
-      renderCart();
-    }
-
-    // --- Place Order ---
-    document.getElementById("place").onclick = async () => {
-      if (cart.length === 0) return alert("Please add at least one item!");
+    document.getElementById("placeOrder").onclick = async () => {
+      if (cart.length === 0) return alert("Please add some items!");
       const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ table: tableNo, items: cart }),
+        body: JSON.stringify({ table, items: cart })
       });
       const data = await res.json();
-      document.getElementById("msg").innerText = "✅ " + data.message;
+      alert(data.message);
       cart.length = 0;
       renderCart();
     };
