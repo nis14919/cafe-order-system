@@ -1,134 +1,371 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Harshil Café Menu</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sora Café - Menu</title>
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      background: #f7f3ef;
-      color: #3e2f24;
       margin: 0;
-      text-align: center;
+      background-color: #0d0d0d;
+      color: #f1c40f;
     }
+
     header {
-      background: #4b2e1e;
-      color: #fff;
+      background: linear-gradient(to right, #000000, #1a1a1a);
+      color: #f1c40f;
+      text-align: center;
       padding: 20px 0;
-      font-size: 24px;
+      font-size: 28px;
+      font-weight: 700;
+      border-bottom: 2px solid #f1c40f;
       letter-spacing: 1px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .menu {
+
+    .container {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      justify-content: space-between;
       padding: 20px;
+      gap: 20px;
     }
-    .item {
-      background: #fff;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      margin: 15px;
+
+    .menu {
+      flex: 3;
+      min-height: 80vh;
+      transition: all 0.3s ease;
+    }
+
+    .menu h2, .menu h3 {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background-color: #1a1a1a;
+      border: 2px solid #f1c40f;
+      border-radius: 12px;
+      text-align: center;
       padding: 20px;
-      width: 200px;
-      transition: 0.3s;
-    }
-    .item:hover { transform: translateY(-5px); }
-    .item h3 { margin-bottom: 5px; }
-    .item p { margin: 0; color: #5a4635; }
-    .item button {
-      background: #4b2e1e;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 8px 14px;
-      margin-top: 10px;
       cursor: pointer;
-      transition: 0.2s;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .item button:hover { background: #6a3f27; }
-    #cart {
-      background: #fff8f0;
-      display: inline-block;
-      padding: 20px;
-      margin: 20px;
+
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 12px rgba(241,196,15,0.4);
+    }
+
+    .item-card {
+      background-color: #1a1a1a;
+      border: 1px solid #f1c40f;
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    .item-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
       border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    #placeOrder {
-      background: #4b2e1e;
-      color: white;
+
+    .item-card h4 {
+      margin: 8px 0;
+      color: #f1c40f;
+    }
+
+    .item-card p {
+      color: #ccc;
+      margin: 4px 0;
+    }
+
+    button {
+      background-color: #f1c40f;
       border: none;
-      border-radius: 5px;
-      padding: 10px 20px;
+      padding: 6px 16px;
+      border-radius: 20px;
       cursor: pointer;
-      font-size: 16px;
+      font-weight: 600;
       transition: 0.3s;
     }
-    #placeOrder:hover { background: #6a3f27; }
+
+    button:hover {
+      background-color: #ffdb4d;
+    }
+
+    .cart {
+      flex: 1;
+      background-color: #1a1a1a;
+      border: 2px solid #f1c40f;
+      border-radius: 12px;
+      padding: 15px;
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+
+    .cart h3 {
+      text-align: center;
+      border-bottom: 2px solid #f1c40f;
+      padding-bottom: 5px;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      color: #f1c40f;
+    }
+
+    .remove-btn {
+      background: none;
+      color: #f1c40f;
+      border: 1px solid #f1c40f;
+      padding: 3px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .remove-btn:hover {
+      background-color: #f1c40f;
+      color: #000;
+    }
+
+    .place-order {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 10px 0;
+      background-color: #f1c40f;
+      color: #000;
+      border-radius: 25px;
+      font-weight: 700;
+      margin-top: 15px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .place-order:hover {
+      background-color: #ffdb4d;
+    }
+
+    .back-btn {
+      margin-top: 10px;
+      display: inline-block;
+      background: none;
+      border: 1px solid #f1c40f;
+      color: #f1c40f;
+      border-radius: 25px;
+      padding: 6px 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .back-btn:hover {
+      background-color: #f1c40f;
+      color: #000;
+    }
   </style>
 </head>
 <body>
-  <header>☕ Harshil Café</header>
-  <div class="menu" id="menu"></div>
 
-  <div id="cart">
-    <h3>Your Order</h3>
-    <ul id="cartList"></ul>
-    <button id="placeOrder">Place Order</button>
+  <header>☕ Sora Café - Menu</header>
+
+  <div class="container">
+    <div class="menu" id="menu"></div>
+
+    <div class="cart">
+      <h3>Your Order</h3>
+      <div id="cart-items"></div>
+      <hr style="border-color:#f1c40f">
+      <p><strong>Total: ₹<span id="total">0</span></strong></p>
+      <button class="place-order" onclick="placeOrder()">Place Order</button>
+    </div>
   </div>
 
   <script>
-    const menu = [
-      { name: "Cold Coffee", price: 120 },
-      { name: "Hot Coffee", price: 100 },
-      { name: "Chocolate Shake", price: 150 },
-      { name: "Veg Burger", price: 140 },
-      { name: "Garlic Bread", price: 90 },
-      { name: "Brownie", price: 80 },
-      { name: "Pasta Alfredo", price: 180 },
-      { name: "French Fries", price: 110 }
-    ];
+    const data = {
+      "Beverages": {
+        "Coffee": [
+          { name: "Cold Coffee", price: 120 },
+          { name: "Hot Coffee", price: 100 },
+          { name: "Cappuccino", price: 140 },
+          { name: "Latte", price: 150 },
+          { name: "Mocha", price: 160 },
+          { name: "Espresso", price: 110 },
+          { name: "Cold Brew", price: 170 }
+        ],
+        "Shakes": [
+          { name: "Chocolate Shake", price: 150 },
+          { name: "Oreo Shake", price: 160 },
+          { name: "KitKat Shake", price: 170 },
+          { name: "Strawberry Shake", price: 150 },
+          { name: "Vanilla Shake", price: 140 }
+        ],
+        "Tea": [
+          { name: "Masala Tea", price: 70 },
+          { name: "Green Tea", price: 90 },
+          { name: "Lemon Iced Tea", price: 100 }
+        ],
+        "Others": [
+          { name: "Buttermilk", price: 60 },
+          { name: "Milk", price: 50 },
+          { name: "Mineral Water", price: 30 }
+        ]
+      },
+      "Snacks": {
+        "Burgers": [
+          { name: "Veg Burger", price: 120 },
+          { name: "Cheese Burger", price: 150 },
+          { name: "Paneer Burger", price: 170 },
+          { name: "Double Patty Burger", price: 190 }
+        ],
+        "Sandwiches": [
+          { name: "Veg Sandwich", price: 120 },
+          { name: "Club Sandwich", price: 160 },
+          { name: "Grilled Cheese Sandwich", price: 150 },
+          { name: "Paneer Tikka Sandwich", price: 170 }
+        ],
+        "Fries & Sides": [
+          { name: "French Fries", price: 80 },
+          { name: "Peri Peri Fries", price: 100 },
+          { name: "Garlic Bread", price: 100 },
+          { name: "Veg Puff", price: 60 }
+        ]
+      },
+      "Main Course": {
+        "Pizza": [
+          { name: "Margherita Pizza", price: 200 },
+          { name: "Farmhouse Pizza", price: 280 },
+          { name: "Paneer Tikka Pizza", price: 300 },
+          { name: "Veggie Delight Pizza", price: 250 }
+        ],
+        "Pasta": [
+          { name: "White Sauce Pasta", price: 200 },
+          { name: "Red Sauce Pasta", price: 200 },
+          { name: "Mix Sauce Pasta", price: 220 },
+          { name: "Mac & Cheese", price: 250 }
+        ]
+      },
+      "Desserts": {
+        "Ice Cream": [
+          { name: "Vanilla Scoop", price: 80 },
+          { name: "Strawberry Scoop", price: 90 },
+          { name: "Chocolate Scoop", price: 100 }
+        ],
+        "Cakes & Waffles": [
+          { name: "Brownie with Ice Cream", price: 150 },
+          { name: "Chocolate Muffin", price: 100 },
+          { name: "Red Velvet Cake", price: 180 },
+          { name: "Waffle with Ice Cream", price: 160 }
+        ]
+      }
+    };
 
-    const menuDiv = document.getElementById("menu");
-    const cartList = document.getElementById("cartList");
-    const cart = [];
-    const table = new URLSearchParams(window.location.search).get("table") || "Unknown";
+    const menu = document.getElementById("menu");
+    let cart = [];
 
-    menu.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "item";
-      div.innerHTML = `<h3>${item.name}</h3><p>₹${item.price}</p><button>Add</button>`;
-      div.querySelector("button").onclick = () => {
-        cart.push(item);
-        renderCart();
-      };
-      menuDiv.appendChild(div);
-    });
+    function showMainCategories() {
+      menu.innerHTML = `<h2>Main Menu</h2>`;
+      const grid = document.createElement("div");
+      grid.className = "grid";
 
-    function renderCart() {
-      cartList.innerHTML = "";
-      cart.forEach(i => {
-        const li = document.createElement("li");
-        li.textContent = `${i.name} - ₹${i.price}`;
-        cartList.appendChild(li);
+      Object.keys(data).forEach(category => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `<h3>${category}</h3>`;
+        card.onclick = () => showSubCategories(category);
+        grid.appendChild(card);
       });
+
+      menu.appendChild(grid);
     }
 
-    document.getElementById("placeOrder").onclick = async () => {
-      if (cart.length === 0) return alert("Please add some items!");
-      const res = await fetch("/api/order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ table, items: cart })
+    function showSubCategories(category) {
+      menu.innerHTML = `<button class="back-btn" onclick="showMainCategories()">← Back</button><h2>${category}</h2>`;
+      const grid = document.createElement("div");
+      grid.className = "grid";
+
+      Object.keys(data[category]).forEach(sub => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `<h3>${sub}</h3>`;
+        card.onclick = () => showItems(category, sub);
+        grid.appendChild(card);
       });
-      const data = await res.json();
-      alert(data.message);
-      cart.length = 0;
+
+      menu.appendChild(grid);
+    }
+
+    function showItems(category, sub) {
+      menu.innerHTML = `<button class="back-btn" onclick="showSubCategories('${category}')">← Back</button><h2>${sub}</h2>`;
+      const grid = document.createElement("div");
+      grid.className = "grid";
+
+      data[category][sub].forEach(item => {
+        const div = document.createElement("div");
+        div.className = "item-card";
+        div.innerHTML = `
+          <img src="images/${item.name.toLowerCase().replace(/\s+/g, '-')}.jpg" alt="${item.name}">
+          <h4>${item.name}</h4>
+          <p>₹${item.price}</p>
+          <button onclick="addToCart('${item.name}', ${item.price})">Add</button>
+        `;
+        grid.appendChild(div);
+      });
+
+      menu.appendChild(grid);
+    }
+
+    function addToCart(name, price) {
+      const existing = cart.find(i => i.name === name);
+      if (existing) existing.qty++;
+      else cart.push({ name, price, qty: 1 });
       renderCart();
-    };
+    }
+
+    function removeFromCart(name) {
+      cart = cart.filter(i => i.name !== name);
+      renderCart();
+    }
+
+    function renderCart() {
+      const cartItems = document.getElementById("cart-items");
+      cartItems.innerHTML = "";
+      let total = 0;
+      cart.forEach(i => {
+        total += i.price * i.qty;
+        const div = document.createElement("div");
+        div.classList.add("cart-item");
+        div.innerHTML = `
+          <span>${i.name} x${i.qty}</span>
+          <button class="remove-btn" onclick="removeFromCart('${i.name}')">Remove</button>
+        `;
+        cartItems.appendChild(div);
+      });
+      document.getElementById("total").textContent = total;
+    }
+
+    function placeOrder() {
+      if (cart.length === 0) {
+        alert("Please add some items before placing an order!");
+        return;
+      }
+      alert("Your order has been placed successfully!");
+      cart = [];
+      renderCart();
+    }
+
+    showMainCategories();
   </script>
 </body>
 </html>
