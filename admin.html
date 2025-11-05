@@ -1,95 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Café Admin Panel</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sora Café - Admin Panel</title>
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      background: #f7f3ef;
-      color: #3e2f24;
       margin: 0;
-      text-align: center;
+      background-color: #0d0d0d;
+      color: #f1c40f;
     }
+
     header {
-      background: #4b2e1e;
-      color: #fff;
+      background: linear-gradient(to right, #000000, #1a1a1a);
+      color: #f1c40f;
+      text-align: center;
       padding: 20px 0;
-      font-size: 24px;
+      font-size: 28px;
+      font-weight: 700;
+      border-bottom: 2px solid #f1c40f;
       letter-spacing: 1px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .orders {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+
+    .container {
       padding: 20px;
+      max-width: 900px;
+      margin: auto;
     }
+
     .order {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      margin: 15px;
+      background-color: #1a1a1a;
+      border: 2px solid #f1c40f;
+      border-radius: 12px;
       padding: 15px;
-      width: 250px;
-      text-align: left;
+      margin-bottom: 20px;
+      box-shadow: 0 0 8px rgba(241,196,15,0.2);
     }
+
     .order h3 {
-      margin-top: 0;
+      margin: 0 0 10px;
+      border-bottom: 1px solid #f1c40f;
+      padding-bottom: 5px;
     }
-    .status-new { color: #e67e22; font-weight: bold; }
-    .status-completed { color: #27ae60; font-weight: bold; }
-    button {
-      background: #4b2e1e;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 6px 12px;
+
+    .order ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .order ul li {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dotted #f1c40f33;
+      padding: 6px 0;
+    }
+
+    .order-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-top: 10px;
-      cursor: pointer;
     }
+
+    .order-time {
+      font-size: 13px;
+      color: #bbb;
+    }
+
+    button {
+      background-color: #f1c40f;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+      color: #000;
+    }
+
     button:hover {
-      background: #6a3f27;
+      background-color: #ffdb4d;
+    }
+
+    .clear-btn {
+      display: block;
+      margin: 20px auto;
+      background: none;
+      border: 1px solid #f1c40f;
+      color: #f1c40f;
+      border-radius: 25px;
+      padding: 8px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .clear-btn:hover {
+      background-color: #f1c40f;
+      color: #000;
+    }
+
+    .empty {
+      text-align: center;
+      color: #999;
+      margin-top: 50px;
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
-  <header>📋 Harshil Café - Admin Panel</header>
+  <header>🛠️ Sora Café - Admin Panel</header>
 
-  <div class="orders" id="orders"></div>
+  <div class="container" id="orders-container">
+    <p class="empty">Loading orders...</p>
+  </div>
+
+  <button class="clear-btn" onclick="clearAllOrders()">Clear All Orders</button>
 
   <script>
     async function loadOrders() {
-      const res = await fetch("/api/orders");
-      const data = await res.json();
-      const container = document.getElementById("orders");
-      container.innerHTML = "";
-      data.forEach(order => {
-        const div = document.createElement("div");
-        div.className = "order";
-        div.innerHTML = `
-          <h3>Table ${order.table}</h3>
-          <p><strong>Items:</strong> ${order.items.map(i => i.name).join(", ")}</p>
-          <p><strong>Time:</strong> ${order.time}</p>
-          <p><strong>Status:</strong> <span class="status-${order.status}">${order.status}</span></p>
-          ${order.status === "new" ? `<button onclick="updateStatus(${order.id})">Mark Completed</button>` : ""}
-        `;
-        container.appendChild(div);
-      });
+      const container = document.getElementById("orders-container");
+      container.innerHTML = '<p class="empty">Loading orders...</p>';
+
+      try {
+        const res = await fetch('/orders.json');
+        const orders = await res.json();
+
+        if (orders.length === 0) {
+          container.innerHTML = '<p class="empty">No orders yet.</p>';
+          return;
+        }
+
+        container.innerHTML = "";
+
+        orders.forEach((order, index) => {
+          const div = document.createElement("div");
+          div.className = "order";
+          div.innerHTML = `
+            <h3>Order #${index + 1}</h3>
+            <ul>
+              ${order.items.map(i => `<li><span>${i.name} x${i.qty}</span> <span>₹${i.price * i.qty}</span></li>`).join("")}
+            </ul>
+            <div class="order-footer">
+              <span class="order-time">🕒 ${new Date(order.time).toLocaleString()}</span>
+              <strong>Total: ₹${order.total}</strong>
+            </div>
+            <button onclick="deleteOrder(${index})">Mark as Completed</button>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        container.innerHTML = '<p class="empty">Failed to load orders.</p>';
+      }
     }
 
-    async function updateStatus(id) {
-      await fetch(`/api/order/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "completed" })
-      });
+    async function deleteOrder(index) {
+      if (!confirm("Mark this order as completed?")) return;
+      await fetch(`/delete-order/${index}`, { method: "DELETE" });
+      loadOrders();
+    }
+
+    async function clearAllOrders() {
+      if (!confirm("Clear all orders?")) return;
+      await fetch("/clear-orders", { method: "DELETE" });
       loadOrders();
     }
 
     loadOrders();
-    setInterval(loadOrders, 5000);
   </script>
 </body>
 </html>
